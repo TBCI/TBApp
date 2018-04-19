@@ -1,0 +1,232 @@
+%Initial User Interface code for App to read PPD test
+%Medical History Questions
+%Reminders
+%Alex Harrison, Zack Richardson, Corey Umstead
+%%
+clear 
+clc
+
+%User Interface
+HighCountry = imread('HighCountry.PNG'); %High Risk Country list
+
+fprintf('Take picture of forearm where the test will be administered.\n')
+
+%AdminTime - input for what time the doctor administered the PPD test
+AdminTime = input('Enter the time the test was administered on 24 hour time scale (Without a :): ');
+Timesize = numel(num2str(AdminTime));
+while Timesize ~= 4 || AdminTime > 2400
+    warning('ERROR. Please enter time according to 24 hour time scale.')
+    AdminTime = input('Enter the time the test was administered on 24 hour time scale (Without a :): ');while MedQ2 == 0
+    warning('ERROR. Please select an option.')
+    MedQ2 = menu('Do you have diabetes?','Yes', 'No');
+end
+MedQ3 = menu('Do you have cancer?','Yes', 'No');
+while MedQ3 == 0
+    warning('ERROR. Please select an option.')
+    MedQ3 = menu('Do you have cancer?','Yes', 'No');
+end
+MedQ4 = menu('Do you have kidney failure?','Yes', 'No');
+while MedQ4 == 0
+    warning('ERROR. Please select an option.')
+    MedQ4 = menu('Do you have kidney failure?','Yes', 'No');
+end
+MedQ5 = menu('Do you have leukemia?','Yes', 'No');
+while MedQ5 == 0
+    warning('ERROR. Please select an option.')
+    MedQ5 = menu('Do you have leukemia?','Yes', 'No');
+end
+MedQ6 = menu('Have you had a gastrectomy?','Yes', 'No');
+while MedQ6 == 0
+    warning('ERROR. Please select an option.')
+    MedQ6 = menu('Have you had a gastrectomy?','Yes', 'No');
+end
+MedQ7 = menu('Do you work in healthcare? i.e. Hospital, Doctor''s Office, Nursing Home?','Yes', 'No');
+while MedQ7 == 0
+    warning('ERROR. Please select an option.')
+    MedQ7 = menu('Do you work in healthcare? i.e. Hospital, Doctor''s Office, Nursing Home?','Yes', 'No');
+end
+MedQ8 = menu('Do you work in a school or a prison?','Yes', 'No');
+while MedQ8 == 0
+    warning('ERROR. Please select an option.')
+    MedQ8 = menu('Do you work in a school or a prison?','Yes', 'No');
+end
+
+imshow(HighCountry)
+MedQ9 = menu('Have you ever lived in or traveled to a country with a high risk of Tuberculosis?','Yes', 'No');
+while MedQ9 == 0
+    warning('ERROR. Please select an option.')
+    MedQ9 = menu('Have you ever lived in or traveled to a country with a high risk of Tuberculosis?','Yes', 'No');
+end
+close
+
+%High Risk Questions
+MedQ10 = menu('Have you ever been in close contact with someone who has Tuberculosis?','Yes', 'No');
+while MedQ10 == 0
+    warning('ERROR. Please select an option.')
+    MedQ10 = menu('Have you ever been in close contact with someone who has Tuberculosis?','Yes', 'No');
+end
+MedQ11 = menu('Do you have HIV','Yes', 'No');
+while MedQ11 == 0
+    warning('ERROR. Please select an option.')
+    MedQ11 = menu('Do you have HIV','Yes', 'No');
+end
+MedQ12 = menu('Do you take corticosteroids?','Yes', 'No');
+while MedQ12 == 0
+    warning('ERROR. Please select an option.')
+    MedQ12 = menu('Do you take corticosteroids?','Yes', 'No');
+end
+MedQ13 = menu('Do you take any medications to treat Rheumatoid Arthritis or Chrohn''s Disease?','Yes', 'No');
+while MedQ13 == 0
+    warning('ERROR. Please select an option.')
+    MedQ13 = menu('Do you take any medications to treat Rheumatoid Arthritis or Chrohn''s Disease?','Yes', 'No');
+end
+
+%Determining if the patient is at a low, moderate, or high risk
+Hrisk = 1; %High Risk
+Mrisk = 2; %Moderate Risk
+Lrisk = 3; %Low Risk
+if (MedQ10 == 1 || MedQ11 == 1 || MedQ12 == 1 || MedQ13 == 1) 
+    risk = Hrisk;
+elseif (MedQ1 <= 4 || MedQ2 == 1 || MedQ3 == 1 || MedQ4 == 1 || MedQ5 == 1 || MedQ6 == 1 || MedQ7 == 1 || MedQ8 == 1 || MedQ9 == 1)
+    risk = Mrisk;
+else
+    risk = Lrisk;
+end
+
+if risk == 1
+    fprintf('You are at a High Risk for Tuberculosis. \n')
+elseif risk == 2
+    fprintf('You are at a Moderate Risk for Tuberculosis. \n')
+else 
+    fprintf('You are at a Low Risk for Tuberculosis. \n')
+end
+
+%Reminder once 48 hours has passed 
+
+%Begin Image Detection
+
+startingFolder = 'C:\Users\Zack Richardson\Documents\MATLAB\BIOE3700\TestPics';
+defaultFileName = fullfile(startingFolder, '*.*');
+[startingFileName, folder] = uigetfile(defaultFileName, 'Select a file');
+first_image = fullfile(folder, startingFileName);
+
+[finalFileName, folder] = uigetfile(defaultFileName, 'Select a file');
+last_image = fullfile(folder, finalFileName);
+
+x = imread(first_image); 
+Gray1 = rgb2gray(x);
+I = imread(last_image);
+Gray2 = rgb2gray(I);
+
+threshhold = 0.10;   
+ 
+BW_first = edge(Gray1,'Canny',threshhold); %canny shows most detail
+
+BW_last = edge(Gray2,'Canny',threshhold); %canny shows most detail
+
+figure
+imshowpair(BW_first,BW_last,'montage')
+title('Before and After Comparison');
+
+figure
+z = imfuse(BW_first,BW_last,'diff');
+imshow(z)
+title('Test identification')
+
+%imshowpair(I,BW_c,'montage')
+
+
+%rmat = I(:,:,1);
+%gmat = I(:,:,2);
+%bmat = I(:,:,3);
+
+%figure
+%subplot(2,2,1), imshow(rmat);
+%title('Red Plane');
+%subplot(2,2,2), imshow(gmat);
+%title('Green Plane');
+%subplot(2,2,3), imshow(bmat);
+%title('Blue Plane');
+%subplot(2,2,4), imshow(Gray2);
+%title('Gray Pic');
+
+% Flood Fill
+
+se90 = strel('line', 3, 90);
+se0 = strel('line', 3, 0);
+
+BW_c_dil = imdilate(z, [se90 se0]);
+figure
+imshow(BW_c_dil)
+title('Dilated Test Image');
+
+BWfill = imfill(BW_c_dil, 'holes');
+figure
+imshow(BWfill);
+title('Binary Image with filled holes');
+
+BWclearfuzz = imclearborder(BWfill, 4);
+figure
+imshow(BWclearfuzz)
+title('Cleared Border Image');
+
+seD = strel('diamond',1);
+BWfinal = imerode(BWclearfuzz,seD);
+BWfinal = imerode(BWfinal,seD);
+figure
+imshow(BWfinal) %40-50 pixels = final size of area of interest
+title('Final Smoothed Image');
+
+BWfinal_outline = bwperim(BWfinal);
+Test_outline = I; 
+Test_outline(BWfinal_outline) = 255; 
+figure
+imshow(Test_outline)
+title('Outline of Original Test');
+
+A = size(BWfinal);
+max_distance = 0;
+for a = 1:A(2)       %column
+    counter = -1;
+    for b = 1:A(1)   %row
+        if BWfinal(b,a) == 255
+            counter = counter + 1;
+            if counter > max_distance
+                max_distance = counter;
+            end
+        else 
+            counter = -1;
+        end
+    end
+end
+
+for c = 1:A(1)       %row
+    counter = -1;
+    for d = 1:A(2)   %column
+        if BWfinal(c,d) == 255
+            counter = counter + 1;
+            if counter > max_distance
+                max_distance = counter;
+            end
+        else 
+            counter = -1;
+        end
+    end
+end
+     
+fprintf('The maximum diameter of the test area is %0.0f pixels.\n\n',max_distance) 
+
+if max_distance <= 20 
+    fprintf('Test results are negative.\n')
+elseif max_distance > 20 && max_distance <= 29 && risk == Hrisk
+    fprintf('Test results are positive\n')
+elseif max_distance > 20 && max_distance <= 29 
+    fprintf('Test results are negative.\n')
+elseif max_distance >= 30 && max_distance <= 37 && risk == Mrisk
+    fprintf('Test results are positive\n')
+elseif max_distance >= 30 && max_distance <= 37 
+    fprintf('Test results are negative.\n')
+else 
+    fprintf('Test results are positive\n')
+end
+
